@@ -46,14 +46,10 @@ alias vi='vim'
 alias vil='vim .'
 
 ## Exports
-IP=`/usr/sbin/ip a s dev eth0 | grep 'inet ' | awk '{print $2}' | sed 's|/.*||'`
-export PS1="$BRed\u$None@$Yellow`echo $HOSTNAME | sed "s/(none)/$IP/"`${None}:$BGreen\w$None \033k"'`getwindowname`'"\033\\\\\\n\\$ "
+ip=`/usr/sbin/ip a s dev eth0 | grep 'inet ' | awk '{print $2}' | sed 's|/.*||'`
+host=`echo $HOSTNAME | sed "s/(none)/$ip/"`
+export PS1="$BRed\u$None@$Yellow$host${None}:$BGreen\w$None \033k"'`getwindowname 2> /dev/null`'"\033\\\\\\n\\$ "
 export EDITOR=vim
-export PATH_ADD=~/bin
-if [ -z "$PATH_ORIG" ]; then
-    export PATH_ORIG=$PATH
-    export PATH=${PATH}:${PATH_ADD}
-fi
 export PROJECT_ROOT=~/.projects
 
 ## Unsets
@@ -77,6 +73,7 @@ getproj()
 {
     echo $PROJECT_NAME
 }
+
 
 setproj()
 {

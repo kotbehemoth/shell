@@ -60,7 +60,7 @@ To fully configure the shell please do the following things:
 
 E.g.: .bashrc:
 export PATH="\${PATH}:$dir/bin"
-source $dir/.shrc
+source $dir/shrc
 
 EOF
 

@@ -1,0 +1,54 @@
+#!/bin/bash --norc
+
+if [ $# -ne 1 ]; then
+    echo "Syntax: `basename $0` <file>"
+    exit
+fi
+
+
+if [ -n "$PROJECT_NAME" ] && [ -r ~/.projects/$PROJECT_NAME/cscope.files ]; then
+    FILELIST=~/.projects/$PROJECT_NAME/cscope.files
+else
+    echo "Not in project or no cscope.files found"
+    exit
+fi
+
+if [ "`basename $0`" == "fl" ]; then
+    LISTONLY=1
+    SKIPPATH=""
+else
+    LISTONLY=0
+    SKIPPATH="" #s|`/home/lipinsm1/bin/getbuildpath`/||"
+fi
+
+FILE=`echo $1 | sed 's/:.*//'`
+if echo $1 | grep : > /dev/null; then
+    LINE=`echo $1 | sed 's/.*:/:/'`
+else
+    LINE=
+fi
+
+OUT=`grep -i $FILE $FILELIST`
+RESULT=`grep -i $FILE $FILELIST | wc -l | awk '{print $1}'`
+if [ $LISTONLY -eq 1 ]; then
+    grep -i $FILE $FILELIST | sed 's/\"//g' | sed "$SKIPPATH"
+    exit
+fi
+
+if [ $RESULT -eq 0 ]; then
+    echo "File not found"
+elif [ $RESULT -eq 1 ]; then
+    $EDITOR `echo $OUT | sed 's/\"//g'`$LINE
+else
+    grep -i $FILE $FILELIST | sed 's/\"//g' | sed "$SKIPPATH" | cat -n  | sed 's|\([0-9]\+\)\(.*\)|\1 \2 [\1]|' #awk '{print $1 "\t" $2 "  [" $1 "]"}'
+    echo -n "Choose number to open: "
+    read CHOICE
+    if [ -n "$CHOICE" ]; then
+        FILE=`grep -i $FILE $FILELIST | sed 's/\"//g' | head -n $CHOICE | tail -n 1`
+        if ! [ -f "$FILE" ]; then
+            echo "Something went wrong :("
+            exit
+        fi
+        $EDITOR ${FILE}$LINE
+    fi
+fi

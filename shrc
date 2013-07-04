@@ -1,0 +1,277 @@
+# vim:set tabstop=4:
+# vim:set smartindent:
+# vim:set shiftwidth=4:
+
+## Variables
+
+## Colors
+
+# Reset
+None='\e[0m'       # Text Reset
+
+# Regular Colors
+Black='\e[0;30m'        # Black
+Red='\e[0;31m'          # Red
+Green='\e[0;32m'        # Green
+Yellow='\e[0;33m'       # Yellow
+Blue='\e[0;34m'         # Blue
+Purple='\e[0;35m'       # Purple
+Cyan='\e[0;36m'         # Cyan
+White='\e[0;37m'        # White
+
+# Bold
+BBlack='\e[1;30m'       # Black
+BRed='\e[1;31m'         # Red
+BGreen='\e[1;32m'       # Green
+BYellow='\e[1;33m'      # Yellow
+BBlue='\e[1;34m'        # Blue
+BPurple='\e[1;35m'      # Purple
+BCyan='\e[1;36m'        # Cyan
+BWhite='\e[1;37m'       # White
+
+
+
+## Bindings
+
+# alt+left/right
+#bind '"\e\e[D":backward-word'
+#bind '"\e\e[C":forward-word'
+bind '"\e[[1;3D":backward-word' 
+bind '"\e[[1;3C":forward-word'
+
+## Aliases
+
+alias l='ls -Fl --color=auto'
+alias vi='vim'
+alias vil='vim .'
+
+## Exports
+IP=`/usr/sbin/ip a s dev eth0 | grep 'inet ' | awk '{print $2}' | sed 's|/.*||'`
+export PS1="$BRed\u$None@$Yellow`echo $HOSTNAME | sed "s/(none)/$IP/"`${None}:$BGreen\w$None \033k"'`getwindowname`'"\033\\\\\\n\\$ "
+export EDITOR=vim
+export PATH_ADD=~/bin
+if [ -z "$PATH_ORIG" ]; then
+    export PATH_ORIG=$PATH
+    export PATH=${PATH}:${PATH_ADD}
+fi
+export PROJECT_ROOT=~/.projects
+
+## Unsets
+
+unset command_not_found_handle
+
+## Functions
+
+vmake()
+{
+    vim -c "make $*";
+}
+
+validname()
+{
+    echo $1 | grep -q -e '^[^\.][a-zA-Z0-9_-\.]\+[^\.]$'
+    return $?
+}
+
+getproj()
+{
+    echo $PROJECT_NAME
+}
+
+setproj()
+{
+    echo "Setting project to: $1"
+    export PROJECT_NAME=$1
+    export CSCOPE_DB=$PROJECT_ROOT/$PROJECT_NAME/cscope_`uname -m`.out
+}
+
+noproj()
+{
+    unset PROJECT_NAME
+    unset CSCOPE_DB
+}
+
+proj()
+{
+    mkdir -p $PROJECT_ROOT
+    if [ -n "$1" ]; then
+        if [ -d "$PROJECT_ROOT/$1" ]; then
+            setproj $1
+        else
+            echo -e -n "No such project: $1\nCreate it? [y/N] "
+            read choice
+            if [ "$choice" == "y" ]; then 
+                if validname $1; then
+                    mkdir "$PROJECT_ROOT/$1"
+                    setproj $1
+                else
+                    echo "Invalid project name"
+                    return 1
+                fi
+            fi
+        fi
+        return 0
+    else
+        list=`ls $PROJECT_ROOT`
+        if [ -z "$list" ]; then
+            echo "No projects defined. Run $0 <project_name>"
+            return
+        fi
+        echo "Available projects:"
+        for item in $list; do echo $item; done | cat -n
+        echo -n "Select project (0 - NONE, <CR> - cancel): "
+        read i
+        if [ "$i" == "0" ]; then
+            noproj
+            return 2
+        fi
+        if [ -n "$i" ]; then
+            project=`echo $list | cut -f"$i" -d' '`
+        else
+            project=''
+        fi
+        if [ -z "$project" ]; then
+            return 3
+        fi
+        setproj $project
+        return 0
+    fi
+    return 255
+}
+
+edproj()
+{
+    if [ -n "$1" ]; then
+        if ! validname $1; then
+            echo "Invalid project name"
+            return
+        fi
+        project=$1
+    else
+        if [ -z "$PROJECT_NAME" ]; then
+            echo "No project set. Use proj command."
+            return
+        fi
+        project=$PROJECT_NAME
+    fi
+    dirfile=$PROJECT_ROOT/$project/cscope.dirs
+    if ! [ -d $PROJECT_ROOT/$project ]; then
+        echo "Project not found: $project"
+        return
+    fi
+    $EDITOR $dirfile
+    echo "Use: mkcs to regenerate the database"
+}
+
+mkcs()
+{
+    if [ -z "$PROJECT_NAME" ]; then
+        echo "No project set. Use proj command."
+        return
+    fi
+
+    mkdir -p $PROJECT_ROOT/$PROJECT_NAME
+
+    filelist=$PROJECT_ROOT/$PROJECT_NAME/cscope.files
+    cscopedb=$PROJECT_ROOT/$PROJECT_NAME/cscope_`uname -m`.out
+    dirlist=$PROJECT_ROOT/$PROJECT_NAME/cscope.dirs
+
+    dirs=''
+
+    find_dot="-path */.* -prune -o "
+
+    while [ -n "$1" ]; do
+        case $1 in
+            dot)
+                find_dot=
+                ;;
+            *)
+                if [ -d "$1" ]; then
+                    dirs="$dirs $1"
+                else
+                    echo "Directory not found: $1"
+                    return
+                fi
+                ;;
+        esac
+        shift;
+    done
+
+    touch $dirlist
+    if [ -n "$dirs" ]; then
+        echo -n > $dirlist
+        for dir in $dirs; do
+            cd $dir
+            pwd >> $dirlist
+            cd - 2>&1 >/dev/null
+        done
+    else
+        dirs=`cat $dirlist`
+    fi
+
+    dirsok=''
+    for dir in $dirs; do
+        if ! [ -d $dir ]; then
+            echo "WARNING Directory does not exist: $dir"
+        else
+            dirsok="$dirsok $dir"
+        fi
+    done
+
+    if [ -z "$dirsok" ]; then
+        echo "No directories given and no valid directories in $dirlist"
+        return 
+    fi
+
+    echo "Using directories:"
+    for dir in $dirsok; do
+        echo $dir
+    done
+
+    echo "Generating file list ..."
+    set -f
+    echo -n > $filelist
+    for dir in $dirsok; do
+        find $dir -regextype posix-extended\
+            -path '*/.*'        -prune -o\
+            $find_dot \
+            -name '*.[ch]'      -print -o\
+            -name '*.js'        -print -o\
+            -name '*.cpp'       -print -o\
+            -name '*.hpp'       -print -o\
+            -name '*.cc'        -print   \
+            | sed -e "s|^\([^/]\)|$PWD/\1|" -e 's|\([^.]\)\./|\1|' -e 's|\(.*\)|"\1"|g' >> $filelist
+    done
+    set +f
+    echo "Generating cscope db ... "
+    cscope -q -k -b -i$filelist -f $cscopedb
+    echo "Done."
+}
+
+getwindowname()
+{
+    proj=`getproj`
+    if [ $UID -eq 0 ]; then delim='='; else delim='-'; fi
+    if [ -n "$proj" ]; then ret="[$proj]"; else ret="$delim`basename $SHELL`$delim"; fi
+    echo "$ret"
+}
+
+qp()
+{
+    projname=`basename $PWD`
+    if proj $projname; then
+        mkcs $PWD
+    else
+        echo "Project creation failed ($?): $projname"
+    fi
+}
+
+go()
+{
+    tree -d --noreport $1 | cat -n
+    echo -n "Select dir to cd to: "
+    read n
+    if [ -n "$n" ]; then
+        cd `tree -dfi $1 | head -n $n | tail -n1`
+    fi
+}

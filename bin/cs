@@ -1,0 +1,124 @@
+#!/bin/bash
+
+REMOVEROOTDIR=1
+PROJECT_ROOT=~/.projects
+
+syntax()
+{
+    echo "Syntax: `basename $0` f <s|g|c|t|e|f|i|d> <expression>"
+    exit
+}
+
+
+
+if [ $# -lt 3 ] ; then
+    syntax
+fi
+
+if ! [ -n "$PROJECT_NAME" ] || ! [ -r $PROJECT_ROOT/$PROJECT_NAME/cscope.out ]; then
+    echo "Project not set no cscope.out found"
+    exit
+fi
+
+DB=$PROJECT_ROOT/$PROJECT_NAME/cscope_`uname -m`.out
+ROOTDIR="`cat $PROJECT_ROOT/$PROJECT_NAME/cscope.root 2> /dev/null`"
+
+if [ "$1" != "f" ] && [ "$1" != "l" ] && [ "$1" != "i" ]; then
+    syntax
+fi
+
+if [ "$1" == "l" ]; then
+    LISTONLY=1
+else
+    LISTONLY=0
+fi
+
+if [ "$1" == "i" ]; then
+    INFILES=1
+else
+    INFILES=0
+fi
+
+
+#                0 or s: Find this C symbol
+#                1 or g: Find this definition
+#                2 or d: Find functions called by this function
+#                3 or c: Find functions calling this function
+#                4 or t: Find this text string
+#                6 or e: Find this egrep pattern
+#                7 or f: Find this file
+#                8 or i: Find files #including this file
+
+SKIPLINE=""
+case $2 in
+s) N=0;;
+g) N=1;;
+d) N=2;;
+c) N=3;;
+t) N=4;;
+#) N=5;; not used
+e) N=6;;
+f) N=7; SKIPLINE="s/:.*//";;
+i) N=8;;
+*) syntax ;;
+esac
+
+shift
+shift
+
+GRAY="[1;30m"
+WHITE="[1;37m"
+PURPLE="[1;35m"
+
+NOC="[0m"
+
+if [ -n "$ROOTDIR" ] && [ $REMOVEROOTDIR -eq 1 ]; then
+    REPLACE="s|$ROOTDIR/||"
+else
+    REPLACE=""
+fi
+output=`cscope -d -L -f $DB -$N "$*" | cat -n`
+
+if [ -z "$output" ]; then
+    echo "No results."
+    exit
+fi
+
+files=`echo "$output" | sed 's|^\ *\([0-9]\+\)\ *\(.*\)\ \(<\?[a-zA-Z0-9_:]\+>\?\)\ \(<\?[0-9]\+>\?\)\ \(.*\)$|\2:\4|'`
+
+if [ $LISTONLY -eq 0 ]; then
+    if [ `echo "$files" | wc -l | awk '{print $1}'` -eq 1 ]; then
+        $EDITOR `echo $files | sed "$SKIPLINE"`
+        exit
+    fi
+fi
+
+if [ $INFILES -eq 0 ]; then
+    echo -e $PURPLE "Cscope tag: $*"
+    echo -e "\t#\tline\tfilename / context / line" $NOC
+    echo "$output" | sed "$REPLACE" | sed "s|^\ *\([0-9]\+\)\ *\(.*\)\ \(<\?[a-zA-Z0-9_:]\+>\?\)\ \(<\?[0-9]\+>\?\)\ \(.*\)$|$WHITE\t\1\t\4 \2 $NOC<<\3>>\n\t\t\t\5|"
+    echo -n "Type number and <Enter> (empty cancels): "
+
+    read l
+
+    if [ -n "$l" ]; then
+        f=`echo "$files" | head -n $l 2>/dev/null | tail -n 1`
+        if [ -n "$f" ]; then 
+            $EDITOR `echo $f | sed "$SKIPLINE"`
+        else
+            echo "Invalid choice"
+        fi
+    fi
+else
+    echo -e $PURPLE "Cscope tag: $*$NOC" 
+    listfiles=`echo "$output" | sed "$REPLACE" | sed "s|^\ *\([0-9]\+\)\ *\(.*\)\ \(<\?[a-zA-Z0-9_:]\+>\?\)\ \(<\?[0-9]\+>\?\)\ \(.*\)$|\2|" | sort -u`
+    echo "$listfiles" | cat -n
+    echo -n "Type number and <Enter> (empty cancels): "
+
+    read l
+    if [ -n "$l" ]; then
+        filename=`echo "$listfiles" | head -n $l | tail -n 1`
+        $EDITOR $filename
+    fi
+
+fi    

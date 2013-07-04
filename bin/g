@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [ $# -eq 1 ] ; then
+    Q=$1
+    P=.
+elif [ $# -eq 2 ]; then
+    Q=$1
+    P=$2
+else
+    echo "Syntax: `basename $0` <expression> [<path>]"
+    exit
+fi
+
+function result
+{
+    trap SIGINT
+    if [ -n "$LIST" ]; then
+       if [ "`basename $0`" == "gg" ]; then
+          echo -n "Choose number to open (or <CR> to cancel): "
+          read CHOICE
+          if [ -n "$CHOICE" ]; then
+              FILE=`echo "$LIST" | head -n $CHOICE | tail -n 1 | sed 's/[ \t]*[0-9]*[ \t]*\([^:]*\):\([^:]*\).*/\1:\2/g'`
+              $EDITOR ${FILE}
+          fi
+#       else
+#          echo "$LIST"
+       fi
+    else
+       echo "Pattern not found"
+    fi
+    exit
+}
+
+trap result SIGINT
+if [ "`basename $0`" == "gg" ]; then
+    LIST=`/bin/find $P -regextype posix-extended -path '*/.svn*' -prune -o -type f -exec grep -IiHn "$Q" {} \; 2>/dev/null | cat -n | tee /dev/stderr`
+else
+    LIST=`/bin/find $P -regextype posix-extended -path '*/.svn*' -prune -o -type f -exec grep -IiHn "$Q" {} \; 2>/dev/null | tee /dev/stderr`
+fi
+result
+
+

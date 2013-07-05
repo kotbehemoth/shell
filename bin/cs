@@ -15,7 +15,7 @@ if [ $# -lt 3 ] ; then
     syntax
 fi
 
-if ! [ -n "$PROJECT_NAME" ] || ! [ -r $PROJECT_ROOT/$PROJECT_NAME/cscope.out ]; then
+if ! [ -n "$PROJECT_NAME" ] || ! [ -r $PROJECT_ROOT/$PROJECT_NAME/cscope_`uname -m`.out ]; then
     echo "Project not set no cscope.out found"
     exit
 fi

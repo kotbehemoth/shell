@@ -46,7 +46,7 @@ alias vi='vim'
 alias vil='vim .'
 
 ## Exports
-IP=`/usr/sbin/ip a s dev eth0 | grep 'inet ' | awk '{print $2}' | sed 's|/.*||'`
+IP=`/usr/sbin/ip a s dev eth0 2>/dev/null | grep 'inet ' | awk '{print $2}' | sed 's|/.*||'`
 export PS1="$BRed\u$None@$Yellow`echo $HOSTNAME | sed "s/(none)/$IP/"`${None}:$BGreen\w$None \033k"'`getwindowname`'"\033\\\\\\n\\$ "
 export EDITOR=vim
 export PATH_ADD=~/bin

@@ -50,6 +50,7 @@ ip=`/usr/sbin/ip a s dev eth0 2>/dev/null | grep 'inet ' | awk '{print $2}' | se
 host=`echo $HOSTNAME | sed "s/(none)/$ip/"`
 export PS1="$BRed\u$None@$Yellow$host${None}:$BGreen\w$None \033k"'`getwindowname 2> /dev/null`'"\033\\\\\\n\\$ "
 export EDITOR=vim
+export VISUAL=vim
 export PROJECT_ROOT=~/.projects
 
 ## Unsets

@@ -33,9 +33,9 @@ function result
 
 trap result SIGINT
 if [ "`basename $0`" == "gg" ]; then
-    LIST=`/bin/find $P -regextype posix-extended -path '*/.svn*' -prune -o -type f -exec grep -IiHn "$Q" {} \; 2>/dev/null | cat -n | tee /dev/stderr`
+    LIST=`find $P -regextype posix-extended -path '*/.svn*' -prune -o -type f -exec grep -IiHn "$Q" {} \; 2>/dev/null | cat -n | tee /dev/stderr`
 else
-    LIST=`/bin/find $P -regextype posix-extended -path '*/.svn*' -prune -o -type f -exec grep -IiHn "$Q" {} \; 2>/dev/null | tee /dev/stderr`
+    LIST=`find $P -regextype posix-extended -path '*/.svn*' -prune -o -type f -exec grep -IiHn "$Q" {} \; 2>/dev/null | tee /dev/stderr`
 fi
 result
 

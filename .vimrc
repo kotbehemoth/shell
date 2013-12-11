@@ -1,3 +1,8 @@
+" This file contains a number of settings and macros collected by my from the
+" internet thorughout few years on my usage of vim. I'm not the author of
+" majority of them, however it's impossible for me to state the real authors.
+" I hope the authors don't mind.
+
 "turns on syntax
 syntax on
 
@@ -51,26 +56,6 @@ noremap .s :setlocal spell spelllang=en_us<CR>
 
 "color scheme
 colorscheme elflord
-
-
-function! DisplayFilename()
-"   exe '!echo ' expand("%p")
-"   exe "!echo dsdsa"
-"   if &buftype == ""
-       echomsg "tetre"
-       exe "!echo dsdsa"
-"   endif
-endfunction
-
-"autocmd! VimLeave * call DisplayFilename()
-"augroup test
-"autocmd VimLeave * call DisplayFilename()
-"augroup END
-
-"au! test
-
-"autocmd BufUnload * if &buftype == "" | echo "Unloading " . =expand("%:p) | endif
-"autocmd VimLeave * exe "!/bin/echo Unloading"
 
 "man under cursor
 "{{{

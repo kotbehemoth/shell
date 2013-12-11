@@ -65,7 +65,7 @@ vmake()
 
 validname()
 {
-    echo $1 | grep -q -e '^[^\.][a-zA-Z0-9_-\.]\+[^\.]$'
+    echo $1 | grep -q -e '^[a-zA-Z0-9_-]\+$'
     return $?
 }
 
@@ -112,7 +112,7 @@ proj()
         list=`ls $PROJECT_ROOT`
         if [ -z "$list" ]; then
             echo "No projects defined. Run $0 <project_name>"
-            return
+            return 1
         fi
         echo "Available projects:"
         for item in $list; do echo $item; done | cat -n
@@ -194,20 +194,33 @@ mkcs()
         shift;
     done
 
+    if [ -n "$dirs" ] && [ -r $dirlist ]; then
+        echo "Current directory list:"
+        cat $dirlist
+        echo -n "Overwrite with new list? [y/N] "
+        read choice
+        if [ "$choice" != "y" ]; then
+            return
+        fi
+    fi
+
+    dirsfull=''
     touch $dirlist
     if [ -n "$dirs" ]; then
         echo -n > $dirlist
         for dir in $dirs; do
             cd $dir
-            pwd >> $dirlist
+            full=`pwd`
+            echo $full >> $dirlist
+            dirsfull="$dirsfull $full"
             cd - 2>&1 >/dev/null
         done
     else
-        dirs=`cat $dirlist`
+        dirsfull=`cat $dirlist`
     fi
 
     dirsok=''
-    for dir in $dirs; do
+    for dir in $dirsfull; do
         if ! [ -d $dir ]; then
             echo "WARNING Directory does not exist: $dir"
         else

@@ -3,11 +3,11 @@ syntax on
 
 "insert 4 spaces ostead of tab, display <TAB> as 4 spaces
 set expandtab
-set tabstop=4
+set tabstop=2
 
 "indents after { by 4 spaces
 set smartindent
-set shiftwidth=4
+set shiftwidth=2
 
 "exit vim on ^C
 noremap <C-c> :exit<CR>
@@ -45,6 +45,9 @@ noremap ./ :noh<CR>
 
 "browse recently opened files
 noremap .h :browse oldfiles<CR>
+
+"browse recently opened files
+noremap .s :setlocal spell spelllang=en_us<CR>
 
 "color scheme
 colorscheme elflord

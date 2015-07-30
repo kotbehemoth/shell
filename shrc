@@ -246,11 +246,11 @@ mkcs()
         find $dir -regextype posix-extended\
             -path '*/.*'        -prune -o\
             $find_dot \
-            -name '*.[ch]'      -print -o\
-            -name '*.js'        -print -o\
-            -name '*.cpp'       -print -o\
-            -name '*.hpp'       -print -o\
-            -name '*.cc'        -print   \
+            -iname '*.[ch]'      -print -o\
+            -iname '*.js'        -print -o\
+            -iname '*.cpp'       -print -o\
+            -iname '*.hpp'       -print -o\
+            -iname '*.cc'        -print   \
             | sed -e "s|^\([^/]\)|$PWD/\1|" -e 's|\([^.]\)\./|\1|' -e 's|\(.*\)|"\1"|g' >> $filelist
     done
     set +f

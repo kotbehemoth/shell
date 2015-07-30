@@ -10,6 +10,8 @@ syntax on
 set expandtab
 set tabstop=2
 
+se ruler
+
 "indents after { by 4 spaces
 set smartindent
 set shiftwidth=2
@@ -57,6 +59,9 @@ noremap .s :setlocal spell spelllang=en_us<CR>
 "color scheme
 colorscheme elflord
 
+"fix backspace
+set backspace=2
+
 "man under cursor
 "{{{
 fun! ReadMan()
@@ -76,7 +81,7 @@ noremap .m :call ReadMan()<CR>
 "  :20  :  up to 20 lines of command-line history will be remembered
 "  %    :  saves and restores the buffer list
 "  n... :  where to save the viminfo files
-"se viminfo='10,\"100,:20,%,n~/.viminfo
+se viminfo='10,\"1000,:20,%,n~/.viminfo,<1000
 function! ResCur()
 if line("'\"") <= line("$")
 normal! g`"

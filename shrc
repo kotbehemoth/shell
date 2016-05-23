@@ -36,9 +36,8 @@ BWhite='\e[1;37m'       # White
 # alt+left/right
 #bind '"\e\e[D":backward-word'
 #bind '"\e\e[C":forward-word'
-bind '"\e[[1;3D":backward-word' 
-bind '"\e[[1;3C":forward-word'
-
+bind '"\e[1;3D":backward-word'
+bind '"\e[1;3C":forward-word'
 ## Aliases
 
 alias l='ls -Fl --color=auto'

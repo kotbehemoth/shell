@@ -58,7 +58,11 @@ To fully configure the shell please do the following things:
 - Add $dir/bin to the \$PATH variable
 - Source $dir/shrc in your start script
 
+The following variables configures vim behavior:
+TABSPACES=X - uses X spaces instead of <TAB> character
+
 E.g.: .bashrc:
+export TABSPACES=4
 export PATH="\${PATH}:$dir/bin"
 source $dir/shrc
 

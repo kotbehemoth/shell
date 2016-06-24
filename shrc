@@ -74,6 +74,10 @@ getproj()
     echo $PROJECT_NAME
 }
 
+getgitbranch()
+{
+    git rev-parse --abbrev-ref HEAD 2> /dev/null
+}
 
 setproj()
 {
@@ -261,9 +265,32 @@ mkcs()
 getwindowname()
 {
     proj=`getproj`
-    if [ $UID -eq 0 ]; then delim='='; else delim='-'; fi
-    if [ -n "$proj" ]; then ret="[$proj]"; else ret="$delim`basename $SHELL`$delim"; fi
-    echo "$ret"
+    branch=`getgitbranch`
+    name=""
+    if [ -n "$proj$branch" ]; then
+        delim1="("
+        delim2=")"
+        name="$branch"
+        if [ -n "$proj" ]; then
+            if [ -n "$name" ]; then
+                name="$proj/$name";
+            else
+                delim1="["
+                delim2="]"
+                name="$proj"
+            fi
+        fi
+    elif [ $UID -eq 0 ]; then
+        delim1="="
+        delim2="="
+        name="`basename $SHELL`"
+    else
+        delim1="-"
+        delim2="-"
+        name="`basename $SHELL`"
+    fi
+
+    echo "$delim1$name$delim2";
 }
 
 qp()

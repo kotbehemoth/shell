@@ -6,15 +6,15 @@
 "turns on syntax
 syntax on
 
-"insert 4 spaces ostead of tab, display <TAB> as 4 spaces
-set expandtab
-set tabstop=2
-
-se ruler
-
-"indents after { by 4 spaces
+set nocscopeverbose
+set ruler
 set smartindent
-set shiftwidth=2
+
+if !empty($TABSPACES)
+    set expandtab
+    execute "set shiftwidth=".$TABSPACES
+    execute "set tabstop=".$TABSPACES
+endif
 
 "exit vim on ^C
 noremap <C-c> :exit<CR>

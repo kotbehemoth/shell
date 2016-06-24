@@ -111,7 +111,7 @@ proj()
     else
         list=`ls $PROJECT_ROOT`
         if [ -z "$list" ]; then
-            echo "No projects defined. Run $0 <project_name>"
+            echo "No projects defined. Run proj <project_name>"
             return 1
         fi
         echo "Available projects:"
@@ -211,7 +211,7 @@ mkcs()
         for dir in $dirs; do
             cd $dir
             full=`pwd`
-            echo $full >> $dirlist
+            echo \"$full\" >> $dirlist
             dirsfull="$dirsfull $full"
             cd - 2>&1 >/dev/null
         done

@@ -5,7 +5,7 @@ if [ $# -eq 1 ] ; then
     P=.
 elif [ $# -eq 2 ]; then
     Q=$1
-    P=$2
+    P="$2"
 else
     echo "Syntax: `basename $0` <expression> [<path>]"
     exit
@@ -33,9 +33,9 @@ function result
 
 trap result SIGINT
 if [ "`basename $0`" == "gg" ]; then
-    LIST=`find $P -regextype posix-extended -path '*/.svn*' -prune -o -type f | xargs grep -IiHn "$Q" 2>/dev/null | cat -n | tee /dev/stderr`
+    LIST=`find "$P" -regextype posix-extended -path '*/.svn*' -prune -o -type f | xargs grep -IiHn "$Q" 2>/dev/null | cat -n | tee /dev/stderr`
 else
-    LIST=`find $P -regextype posix-extended -path '*/.svn*' -prune -o -type f | xargs grep -IiHn "$Q" 2>/dev/null | tee /dev/stderr`
+    LIST=`find "$P" -regextype posix-extended -path '*/.svn*' -prune -o -type f | xargs grep -IiHn "$Q" 2>/dev/null | tee /dev/stderr`
 fi
 result
 

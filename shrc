@@ -275,16 +275,22 @@ getwindowname()
     proj=`getproj`
     if [ -n "$proj" ]; then
         name="$proj"
+        if [ $UID -eq 0 ]; then
+            delim1="<"
+            delim2=">"
+        else
+            delim1="["
+            delim2="]"
+        fi
     else
         name="`basename $SHELL`"
-    fi
-
-    if [ $UID -eq 0 ]; then
-        delim1="<"
-        delim2=">"
-    else
-        delim1="["
-        delim2="]"
+        if [ $UID -eq 0 ]; then
+            delim1="="
+            delim2="="
+        else
+            delim1="-"
+            delim2="-"
+        fi
     fi
 
     echo "$delim1$name$delim2";

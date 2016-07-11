@@ -280,8 +280,8 @@ getwindowname()
     fi
 
     if [ $UID -eq 0 ]; then
-        delim1="("
-        delim2=")"
+        delim1="<"
+        delim2=">"
     else
         delim1="["
         delim2="]"

@@ -47,7 +47,7 @@ alias vil='vim .'
 ## Exports
 ip=`/usr/sbin/ip a s dev eth0 2>/dev/null | grep 'inet ' | awk '{print $2}' | sed 's|/.*||'`
 host=`echo $HOSTNAME | sed "s/(none)/$ip/"`
-export PS1="$BRed\u$None@$Yellow$host${None}:$BGreen\w$None \033k"'`getwindowname 2> /dev/null`'"\033\\\\\\n\\$ "
+export PS1="${BRed}\u${None}@${Yellow}${host}${None}:${BGreen}\w${None} ${BCyan}"'`getbranch`'"${None} \033k"'`getwindowname 2> /dev/null`'"\033\\\\\\n\\$ "
 export EDITOR=vim
 export VISUAL=vim
 export PROJECT_ROOT=~/.projects
@@ -77,6 +77,14 @@ getproj()
 getgitbranch()
 {
     git rev-parse --abbrev-ref HEAD 2> /dev/null
+}
+
+getbranch()
+{
+    gitbranch=`getgitbranch`
+    if [ -n "$gitbranch" ]; then
+        echo "git:${gitbranch}"
+    fi
 }
 
 setproj()
@@ -265,29 +273,18 @@ mkcs()
 getwindowname()
 {
     proj=`getproj`
-    branch=`getgitbranch`
-    name=""
-    if [ -n "$proj$branch" ]; then
+    if [ -n "$proj" ]; then
+        name="$proj"
+    else
+        name="`basename $SHELL`"
+    fi
+
+    if [ $UID -eq 0 ]; then
         delim1="("
         delim2=")"
-        name="$branch"
-        if [ -n "$proj" ]; then
-            if [ -n "$name" ]; then
-                name="$proj/$name";
-            else
-                delim1="["
-                delim2="]"
-                name="$proj"
-            fi
-        fi
-    elif [ $UID -eq 0 ]; then
-        delim1="="
-        delim2="="
-        name="`basename $SHELL`"
     else
-        delim1="-"
-        delim2="-"
-        name="`basename $SHELL`"
+        delim1="["
+        delim2="]"
     fi
 
     echo "$delim1$name$delim2";

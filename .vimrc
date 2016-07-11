@@ -24,7 +24,7 @@ inoremap <C-c> <ESC>:exit<CR>
 set foldmethod=marker
 
 "erasing extra spaces
-noremap .r :%s/\ \+$//<CR>
+noremap .r :%s/[\ \t]\+$//<CR>
 
 "searching
 set ignorecase

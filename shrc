@@ -265,6 +265,8 @@ mkcs()
             | sed -e "s|^\([^/]\)|$PWD/\1|" -e 's|\([^.]\)\./|\1|' -e 's|\(.*\)|"\1"|g' >> $filelist
     done
     set +f
+    echo "Sorting list file ... "
+    sort -o $filelist $filelist
     echo "Generating cscope db ... "
     cscope -q -k -b -i$filelist -f $cscopedb
     echo "Done."

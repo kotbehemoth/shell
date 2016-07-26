@@ -109,7 +109,7 @@ proj()
         else
             echo -e -n "No such project: $1\nCreate it? [y/N] "
             read choice
-            if [ "$choice" == "y" ]; then 
+            if [ "$choice" == "y" ]; then
                 if validname $1; then
                     mkdir "$PROJECT_ROOT/$1"
                     setproj $1
@@ -242,7 +242,7 @@ mkcs()
 
     if [ -z "$dirsok" ]; then
         echo "No directories given and no valid directories in $dirlist"
-        return 
+        return
     fi
 
     echo "Using directories:"
@@ -317,3 +317,13 @@ go()
         cd `tree -dfi $1 | head -n $n | tail -n1`
     fi
 }
+
+gd()
+{
+    if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        git diff --color=always $* | less -R
+    else
+        echo "Not in git repository"
+    fi
+}
+

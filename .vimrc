@@ -38,6 +38,10 @@ set laststatus=2
 " ignore triangling whitespaces when comparing files
 set diffopt+=iwhite
 
+if &diff
+set noro
+endif
+
 "change windows with C-Up/Dn
 noremap [A <C-w>k
 noremap [B <C-w>j

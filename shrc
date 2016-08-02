@@ -327,3 +327,49 @@ gd()
     fi
 }
 
+choicelist() # $1 = list $2 = message
+{
+    if [ -z "$1" ]; then
+        return
+    fi
+    max=`echo "$1" |& wc -l`
+    echo "$1" | cat -n > /dev/stderr
+    echo -n "$2 " > /dev/stderr
+    read number
+
+    if [ "$number" != "" ] && [ $number -gt 0 ] && [ $number -le $max ]; then
+        echo "$1" | head -n $number | tail -n 1
+    fi
+}
+
+difflist() # $1 = list
+{
+    file=`choicelist "$1" "Enter file number to see the diff:"`
+    if [ -z "$file" ]; then
+        return
+    fi
+    if [ -r "$file" ]; then
+        echo $file
+    else
+        echo "Cannot read the file $file" > /dev/stderr
+    fi
+}
+
+svndifflist()
+{
+    list=`svn st 2>/dev/null | grep ^[AM] | awk '{print $2;}'`
+    file=`difflist "$list"`
+    if [ -n "$file" ]; then
+        svn diff --diff-cmd svn_vimdiff $file
+    fi
+}
+
+gitdifflist()
+{
+    list=`git ls-files -m 2>/dev/null`
+    file=`difflist "$list"`
+    if [ -n "$file" ]; then
+        git difftool --tool=vimdiff2 --no-prompt $file
+    fi
+}
+

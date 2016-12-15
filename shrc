@@ -148,6 +148,26 @@ proj()
     return 255
 }
 
+projlist()
+{
+    list=`ls $PROJECT_ROOT`
+    if [ -z "$list" ]; then
+        echo "No projects defined. Run proj <project_name>"
+        return 1
+    fi
+    for item in $list; do
+        echo "${item}:"
+        dirs=$PROJECT_ROOT/$item/cscope.dirs
+        if [ -f "$dirs" ]; then
+            sed -e 's/^/	/' $dirs | grep "."
+            echo "	Delete project: rm -r $PROJECT_ROOT/$item"
+            echo 
+        else
+            echo "	No cscope.dirs available $dirs"
+        fi
+    done
+}
+
 edproj()
 {
     if [ -n "$1" ]; then
@@ -233,7 +253,7 @@ mkcs()
 
     dirsok=''
     for dir in $dirsfull; do
-        if ! [ -d $dir ]; then
+        if ! [ -d "$dir" ]; then
             echo "WARNING Directory does not exist: $dir"
         else
             dirsok="$dirsok $dir"
@@ -254,7 +274,7 @@ mkcs()
     set -f
     echo -n > $filelist
     for dir in $dirsok; do
-        find $dir -regextype posix-extended\
+        find $dir -type f -regextype posix-extended\
             -path '*/.*'        -prune -o\
             $find_dot \
             -iname '*.[ch]'      -print -o\
@@ -274,6 +294,11 @@ mkcs()
 
 getwindowname()
 {
+    if [ "$SHOWHOSTNAME" == "yes" ]; then
+        host="${HOSTNAME}:"
+    else
+        host=
+    fi
     proj=`getproj`
     if [ -n "$proj" ]; then
         name="$proj"
@@ -295,7 +320,7 @@ getwindowname()
         fi
     fi
 
-    echo "$delim1$name$delim2";
+    echo "$delim1$host$name$delim2";
 }
 
 qp()
@@ -357,7 +382,7 @@ difflist() # $1 = list
 
 svndifflist()
 {
-    list=`svn st 2>/dev/null | grep ^[AM] | awk '{print $2;}'`
+    list=`svn st 2>/dev/null | grep ^[AMDC] | awk '{print $2;}'`
     file=`difflist "$list"`
     if [ -n "$file" ]; then
         svn diff --diff-cmd svn_vimdiff $file
@@ -373,3 +398,17 @@ gitdifflist()
     fi
 }
 
+cdp()
+{
+    proj=`getproj`
+    if [ -n "$proj" ]; then
+		dirfile=$PROJECT_ROOT/$project/cscope.dirs
+		if [ -r "$dirfile" ]; then
+			cd "`head -n 1 $dirfile | xargs echo`"
+		else
+			echo "Dir file not foun"
+		fi
+    else
+        echo "Project not set"
+    fi
+}

@@ -58,11 +58,13 @@ To fully configure the shell please do the following things:
 - Add $dir/bin to the \$PATH variable
 - Source $dir/shrc in your start script
 
-The following variables configures vim behavior:
-TABSPACES=X - uses X spaces instead of <TAB> character
+Configuration global variables:
+TABSPACES=X            - uses X spaces instead of <TAB> character in vim
+SHOWHOSTNAME=[yes|no]  - print hostname in window name
 
 E.g.: .bashrc:
 export TABSPACES=4
+export SHOWHOSTNAME=no
 export PATH="\${PATH}:$dir/bin"
 source $dir/shrc
 

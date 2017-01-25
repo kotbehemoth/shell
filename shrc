@@ -181,7 +181,7 @@ projlist()
         if [ -f "$dirs" ]; then
             sed -e 's/^/	/' $dirs | grep "."
             echo "	Delete project: rm -r $PROJECT_ROOT/$item"
-            echo 
+            echo
         else
             echo "	No cscope.dirs available $dirs"
         fi
@@ -229,27 +229,10 @@ mkcs()
 
     find_dot="-path */.* -prune -o "
 
-    while [ -n "$1" ]; do
-        case $1 in
-            dot)
-                find_dot=
-                ;;
-            *)
-                if [ -d "$1" ]; then
-                    dirs="$dirs $1"
-                else
-                    echo "Directory not found: $1"
-                    return
-                fi
-                ;;
-        esac
-        shift;
-    done
-
-    if [ -n "$dirs" ] && [ -r $dirlist ]; then
+    if [ -n "$1" ] && [ -r $dirlist ]; then
         echo "Current directory list:"
         cat $dirlist
-        echo -n "Overwrite with new list? [y/N] "
+        echo -n "Overwrite? [y/N] "
         read choice
         if [ "$choice" != "y" ]; then
             return
@@ -258,45 +241,35 @@ mkcs()
 
     dirsfull=''
     touch $dirlist
-    if [ -n "$dirs" ]; then
+    if [ -n "$1" ]; then
         echo -n > $dirlist
-        for dir in $dirs; do
-            cd $dir
-            full=`pwd`
-            echo \"$full\" >> $dirlist
-            dirsfull="$dirsfull $full"
-            cd - 2>&1 >/dev/null
+        while [ -n "$1" ]; do
+            case $1 in
+                dot)
+                    find_dot=
+                    ;;
+                *)
+                    if [ -d "$1" ]; then
+                        cd $1
+                        pwd >> $dirlist
+                        cd - 2>&1 >/dev/null
+                    else
+                        echo "Directory not found: $1, skipping"
+                    fi
+                    ;;
+            esac
+            shift;
         done
-    else
-        dirsfull=`cat $dirlist`
     fi
-
-    dirsok=''
-    for dir in $dirsfull; do
-        if ! [ -d $dir ]; then
-            echo "WARNING Directory does not exist: <$dir>"
-        else
-            dirsok="$dirsok $dir"
-        fi
-    done
-
-    if [ -z "$dirsok" ]; then
-        echo "No directories given and no valid directories in $dirlist"
-        return
-    fi
-
-    echo "Using directories:"
-    for dir in $dirsok; do
-        echo $dir
-    done
 
     echo "Generating file list ..."
     set -f
     echo -n > $filelist
-    for dir in $dirsok; do
+    IFS=$'\n'
+    for dir in `cat $dirlist`; do
+        echo $dir
         find $dir -type f -regextype posix-extended\
             -path '*/.*'        -prune -o\
-            $find_dot \
             -iname '*.[ch]'      -print -o\
             -iname '*.cpp'       -print -o\
             -iname '*.hpp'       -print -o\
@@ -422,13 +395,13 @@ cdp()
 {
     proj=`getproj`
     if [ -n "$proj" ]; then
-		dirfile=$PROJECT_ROOT/$project/cscope.dirs
+		dirfile=$PROJECT_ROOT/$proj/cscope.dirs
 		if [ -r "$dirfile" ]; then
             newdir=`head -n 1 $dirfile | xargs echo`
             echo "Chaging directory to: $newdir"
 			cd "$newdir"
 		else
-			echo "Dir file not foun"
+			echo "Dir file not found"
 		fi
     else
         echo "Project not set"

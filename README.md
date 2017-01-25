@@ -5,44 +5,36 @@ Shell scripts and configuration
 
 # Install
 
-In order to install run prepare.sh script
+In order to install run prepare.sh script  
 `./prepare.sh`
 
 # Functions
 
 ## Cscope
 
-Create new project:
-
+Create new project:  
 `proj <new project>`
 
 
-Change, set or unset the project:
-
+Change, set or unset the project:  
 `proj`
 
 
-Create cscope database:
-
-`mkcs <folder1> [<folder2> ...]`
-
-e.g.:
-
+Create cscope database:  
+`mkcs <folder1> [<folder2> ...]`  
+e.g.:  
 `mkcs .`
 
 
-Regenerate previously created cscope database:
-
+Regenerate previously created cscope database:  
 `mkcs`
 
 
-Edit folders included in the cscope database:
-
+Edit folders included in the cscope database:  
 `edproj`
 
 
-Cscope tool:
-
+Cscope tool:  
 `cs f <function> <query>`
 
 functions:
@@ -58,13 +50,10 @@ functions:
 
 Search all files with maching pattern:
 
-`ff <file_pattern>`
-
+`ff <file_pattern>`  
 Print and open selected file (opens automatically if only one result)
 
-
-`fl <file_pattern>`
-
+`fl <file_pattern>`  
 Just print matching files
 
 
@@ -74,12 +63,9 @@ Cscope database is used, if not available then all files under current folder ar
 
 Grep files under current folder (case insensitive)
 
-`gg <pattern>`
-
+`gg <pattern>`  
 Print and open file at the match (opens automatically if only one result)
 
-
-`g <pattern>`
-
+`g <pattern>`  
 Just print matches
 

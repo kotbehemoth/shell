@@ -253,8 +253,8 @@ mkcs()
 
     dirsok=''
     for dir in $dirsfull; do
-        if ! [ -d "$dir" ]; then
-            echo "WARNING Directory does not exist: $dir"
+        if ! [ -d $dir ]; then
+            echo "WARNING Directory does not exist: <$dir>"
         else
             dirsok="$dirsok $dir"
         fi
@@ -278,11 +278,11 @@ mkcs()
             -path '*/.*'        -prune -o\
             $find_dot \
             -iname '*.[ch]'      -print -o\
-            -iname '*.js'        -print -o\
             -iname '*.cpp'       -print -o\
             -iname '*.hpp'       -print -o\
             -iname '*.cc'        -print   \
             | sed -e "s|^\([^/]\)|$PWD/\1|" -e 's|\([^.]\)\./|\1|' -e 's|\(.*\)|"\1"|g' >> $filelist
+#            -iname '*.js'        -print -o\
     done
     set +f
     echo "Sorting list file ... "
@@ -404,7 +404,9 @@ cdp()
     if [ -n "$proj" ]; then
 		dirfile=$PROJECT_ROOT/$project/cscope.dirs
 		if [ -r "$dirfile" ]; then
-			cd "`head -n 1 $dirfile | xargs echo`"
+            newdir=`head -n 1 $dirfile | xargs echo`
+            echo "Chaging directory to: $newdir"
+			cd "$newdir"
 		else
 			echo "Dir file not foun"
 		fi

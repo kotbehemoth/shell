@@ -5,12 +5,21 @@ if [ $# -ne 1 ]; then
     exit
 fi
 
+REMOVE=0
+
+cleanup()
+{
+    [ $REMOVE -eq 1 ] && [ -f $FILELIST ] && rm $FILELIST
+}
 
 if [ -n "$PROJECT_NAME" ] && [ -r ~/.projects/$PROJECT_NAME/cscope.files ]; then
     FILELIST=~/.projects/$PROJECT_NAME/cscope.files
 else
-    echo "Not in project or no cscope.files found"
-    exit
+    echo "Not in project or no cscope.files found, searching from `pwd`..."
+    FILELIST=`mktemp`
+    REMOVE=1
+    trap cleanup EXIT
+    find `pwd` -type f > $FILELIST
 fi
 
 if [ "`basename $0`" == "fl" ]; then
@@ -18,7 +27,7 @@ if [ "`basename $0`" == "fl" ]; then
     SKIPPATH=""
 else
     LISTONLY=0
-    SKIPPATH="" #s|`/home/lipinsm1/bin/getbuildpath`/||"
+    SKIPPATH=""
 fi
 
 FILE=`echo $1 | sed 's/:.*//'`
@@ -45,10 +54,11 @@ else
     read CHOICE
     if [ -n "$CHOICE" ]; then
         FILE=`grep -i $FILE $FILELIST | sed 's/\"//g' | head -n $CHOICE | tail -n 1`
+        cleanup
         if ! [ -f "$FILE" ]; then
             echo "Something went wrong :("
             exit
         fi
-        $EDITOR ${FILE}$LINE
+        exec $EDITOR ${FILE}$LINE
     fi
 fi

@@ -32,7 +32,7 @@ set smartcase
 set incsearch
 set hlsearch
 
-"always show status line (with filename) 
+"always show status line (with filename)
 set laststatus=2
 
 " ignore triangling whitespaces when comparing files
@@ -79,13 +79,13 @@ noremap .m :call ReadMan()<CR>
 "}}}
 
 " Tell vim to remember certain things when we exit
-" {{{ 
-"  '10  :  marks will be remembered for up to 10 previously edited files
-"  "100 :  will save up to 100 lines for each register
+" {{{
+"  '20  :  marks will be remembered for up to 10 previously edited files
+"  "1000:  will save up to 1000 lines for each register
 "  :20  :  up to 20 lines of command-line history will be remembered
 "  %    :  saves and restores the buffer list
 "  n... :  where to save the viminfo files
-se viminfo='10,\"1000,:20,%,n~/.viminfo,<1000
+se viminfo='10,\"1000,:20,%,n~/.viminfo
 function! ResCur()
 if line("'\"") <= line("$")
 normal! g`"
@@ -180,6 +180,4 @@ noremap .l :!svn blame <C-R>=expand("%:p") <CR> \| head -n <C-R>=line(".") <CR> 
 noremap .ll :!svn blame <C-R>=expand("%:p") <CR>
 vmap .l :<C-U>!svn blame <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR>
 "}}}
-
-"
 

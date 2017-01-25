@@ -1,0 +1,8 @@
+hardstatus on
+hardstatus alwayslastline "%{=}%-w%{+b y}%n %t%{-b w}%+w %=%c"
+bindkey "[C" next
+bindkey "[D" prev
+bindkey "[1;5C" next
+bindkey "[1;5D" prev
+altscreen on
+termcapinfo xterm* ti@:te@

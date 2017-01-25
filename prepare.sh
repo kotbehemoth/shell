@@ -59,11 +59,17 @@ To fully configure the shell please do the following things:
 - Source $dir/shrc in your start script
 
 Configuration global variables:
-TABSPACES=X            - uses X spaces instead of <TAB> character in vim
-SHOWHOSTNAME=[yes|no]  - print hostname in window name
+TABSPACES=X             - use X spaces instead of <TAB> character in vim
+PRETTYPROMPT=[yes|no]   - modify shell prompt
+SHOWWINDOWNAME=[yes|no] - add setting screen's windows name in prompt
+SHOWBRANCHANME=[yes|no] - add branch name in prompt
+SHOWHOSTNAME=[yes|no]   - print hostname in window name for screen
 
 E.g.: .bashrc:
 export TABSPACES=4
+export PRETTYPROMPT=yes
+export SHOWWINDOWNAME=yes
+export SHOWBRANCHNAME=yes
 export SHOWHOSTNAME=no
 export PATH="\${PATH}:$dir/bin"
 source $dir/shrc

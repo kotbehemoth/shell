@@ -1,7 +1,5 @@
 #!/bin/sh
 
-source=".screenrc .vimrc .vim"
-
 # =================================
 
 if [ -z "$HOME" ]; then
@@ -12,67 +10,69 @@ fi
 cd `dirname $0`
 dir=`pwd`
 
-link=
-missing=
-# check if exists first
-for f in $source; do
-    if [ -r $f ]; then
-        link="$link $f"
-    else
-        missing="$missing $f"
+check_link()  # params: final_link_path absolute_path
+{
+    link=$1
+    src=$2
+    dirname=`dirname $link`
+    if ! [ -d $dirname ]; then
+        echo "Creatin directoy $dirname ..."
+        echo mkdir -p $dirname
     fi
-done
-
-if [ -n "$missing" ]; then
-    echo "There are missing items in the list: $missing"
-    echo -n "Proceed with the preparation? [y/N] "
-    read choice
-    if [ $choice != "y" ]; then
-        exit
-    fi
-fi
-
-for f in $link; do
-    if [ -r $HOME/$f ]; then
-        echo -n "$HOME/$f already exists [S]kip | [r]emove | [c]ancel "
+    if [ -e $link ]; then
+        if [ -h $link ] && [ "`readlink $link`" == "$src" ]; then
+            echo "$link already installed to point to $src, skipping ..."
+            return
+        fi
+        echo -n "File $link already exist, backup and proceed? [y/N] "
         read choice
-        if [ "$choice" == "c" ] ; then
-            exit
-        elif [ "$choice" == "r" ]; then
-            rm -r $HOME/$f
+        if [ "$choice" == "y" ]; then
+            echo "Backing up to $link.bak ..."
+            echo mv $link $link.bak
         else
             echo "Skipping ..."
-            continue
+            return
         fi
     fi
-    if ln -s $dir/$f $HOME/$f; then
-        echo "Added symbolink link: $HOME/$f -> $dir/$f"
-    else
-        echo "Cannot add link: $HOME/$f -> $dir/$f"
-    fi
+    echo "Creating link $link -> $src ..."
+    echo ln -s $src $link
+}
+
+# screen
+check_link $HOME/.screenrc $dir/screenrc
+
+# vim
+check_link $HOME/.vimrc $dir/vimrc
+for plugin in `(cd vim; find -type f -name *.vim -printf '%P\n')`; do
+    check_link $HOME/.vim/$plugin $dir/vim/$plugin
 done
 
 cat << EOF
 
-To fully configure the shell please do the following things:
+# SHELL CONFIGURATION
 - Add $dir/bin to the \$PATH variable
 - Source $dir/shrc in your start script
 
 Configuration global variables:
 TABSPACES=X             - use X spaces instead of <TAB> character in vim
 PRETTYPROMPT=[yes|no]   - modify shell prompt
-SHOWWINDOWNAME=[yes|no] - add setting screen's windows name in prompt
-SHOWBRANCHANME=[yes|no] - add branch name in prompt
-SHOWHOSTNAME=[yes|no]   - print hostname in window name for screen
+SHOWWINDOWNAME=[yes|no] - set screen's window name in prompt
+SHOWHOSTNAME=[yes|no]   - print hostname in window name
+SHOWBRANCHANME=[yes|no] - print branch name in prompt
 
 E.g.: .bashrc:
 export TABSPACES=4
 export PRETTYPROMPT=yes
 export SHOWWINDOWNAME=yes
-export SHOWBRANCHNAME=yes
 export SHOWHOSTNAME=no
+export SHOWBRANCHNAME=yes
 export PATH="\${PATH}:$dir/bin"
 source $dir/shrc
+
+# VIM CONFIGURATION
+If installing .vimrc was skipped you can include the vimrc directly in your start script
+E.g.: .vimrc
+source $dir/vimrc
 
 EOF
 

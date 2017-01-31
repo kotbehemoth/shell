@@ -17,7 +17,7 @@ check_link()  # params: final_link_path absolute_path
     dirname=`dirname $link`
     if ! [ -d $dirname ]; then
         echo "Creatin directoy $dirname ..."
-        echo mkdir -p $dirname
+        mkdir -p $dirname
     fi
     if [ -e $link ]; then
         if [ -h $link ] && [ "`readlink $link`" == "$src" ]; then
@@ -28,14 +28,14 @@ check_link()  # params: final_link_path absolute_path
         read choice
         if [ "$choice" == "y" ]; then
             echo "Backing up to $link.bak ..."
-            echo mv $link $link.bak
+            mv $link $link.bak
         else
             echo "Skipping ..."
             return
         fi
     fi
     echo "Creating link $link -> $src ..."
-    echo ln -s $src $link
+    ln -s $src $link
 }
 
 # screen

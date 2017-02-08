@@ -2,11 +2,11 @@
 # vim:set smartindent:
 # vim:set shiftwidth=4:
 
-#proceed only if current shell is interactive
-SHRC=0
-case "$-" in *i*) SHRC=1;; esac
+# stop processing if current shell is not interactive
 # --------------------------------------
-if [ $SHRC -eq 1 ]; then
+if ! echo $- | grep -q i; then
+    return
+fi
 
 ## Variables
 
@@ -42,6 +42,7 @@ BWhite='\e[1;37m'       # White
 #bind '"\e\e[C":forward-word'
 bind '"\e[1;3D":backward-word'
 bind '"\e[1;3C":forward-word'
+
 ## Aliases
 
 alias l='ls -Fl --color=auto'
@@ -49,12 +50,14 @@ alias vi='vim'
 alias vil='vim .'
 
 ## Exports
+
 if [ -r /etc/hostname ]; then
     hostname=`head -n 1 /etc/hostname | awk '{print $1}'`
 fi
 if [ -z "$host" ]; then
     hostname=$HOSTNAME
 fi
+
 if [ "$PRETTYPROMPT" == "yes" ]; then
     if [ "$SHOWWINDOWNAME" == "yes" ]; then
         windowname="\033k"'`getwindowname`'"\033\\\\"
@@ -408,5 +411,4 @@ cdp()
     fi
 }
 
-fi # end of check if interactive shell
-# --------------------------------------
+

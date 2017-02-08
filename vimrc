@@ -66,6 +66,9 @@ colorscheme elflord
 "fix backspace
 set backspace=2
 
+"sets window title
+set title
+
 "man under cursor
 "{{{
 fun! ReadMan()

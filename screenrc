@@ -6,3 +6,4 @@ bindkey "[1;5C" next
 bindkey "[1;5D" prev
 altscreen on
 termcapinfo xterm* ti@:te@
+defscrollback 50000

@@ -58,18 +58,14 @@ if [ -z "$host" ]; then
     hostname=$HOSTNAME
 fi
 
-if [ "$PRETTYPROMPT" == "yes" ]; then
-    if [ "$SHOWWINDOWNAME" == "yes" ]; then
-        windowname="\033k"'`getwindowname`'"\033\\\\"
+if [ "$PROMPT_ENABLED" == "yes" ]; then
+    if [ "$PROMPT_SCREEN" == "yes" ]; then
+        screen="\033k"'`getwindowname`'"\033\\\\"
     else
-        windowname=
+        screen=
     fi
-    if [ "$SHOWBRANCHNAME" == "yes" ]; then
-        branchname="${BCyan}"'`getbranch`'"${None} "
-    else
-        branchname=
-    fi
-    export PS1="${BRed}\u${None}@${Yellow}${hostname}${None}:${BGreen}\w${None} ${branchname}${windowname}"'\n$ '
+    branchname="${BCyan}"'`getbranch`'"${None} "
+    export PS1="${BRed}\u${None}@${Yellow}${hostname}${None}:${BGreen}\w${None} ${branchname}${screen}"'\n$ '
 fi
 export EDITOR=vim
 export VISUAL=vim
@@ -290,8 +286,8 @@ mkcs()
 
 getwindowname()
 {
-    if [ "$SHOWHOSTNAME" == "yes" ]; then
-        host="$hostname:"
+    if [ "$PROMPT_WINDOW_HOSTNAME" == "yes" ]; then
+        host="${hostname}:"
     else
         host=
     fi

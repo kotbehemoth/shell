@@ -10,10 +10,10 @@ set nocscopeverbose
 set ruler
 set smartindent
 
-if !empty($TABSPACES)
+if !empty($TAB_SPACES)
     set expandtab
-    execute "set shiftwidth=".$TABSPACES
-    execute "set tabstop=".$TABSPACES
+    execute "set shiftwidth=".$TAB_SPACES
+    execute "set tabstop=".$TAB_SPACES
 endif
 
 "exit vim on ^C

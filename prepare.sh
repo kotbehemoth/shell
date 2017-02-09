@@ -50,18 +50,20 @@ for plugin in `(cd vim; find -type f -name *.vim -printf '%P\n')`; do
 done
 
 cat << EOF
+Installation finished.
 
-# SHELL CONFIGURATION
-- Add $dir/bin to the \$PATH variable
-- Source $dir/shrc in your start script
+In order to configure the shell make the following changes in your
+start script (e.g.: .bashrc):
 
-Configuration global variables:
+1. Set global variables (if necessary):
 TAB_SPACES=X                    - use X spaces instead of <TAB> character in vim
 PROMPT_ENABLED=[yes|no]         - modify shell prompt
 PROMPT_SCREEN=[yes|no]          - set screen's window name in prompt
 PROMPT_WINDOW_HOSTNAME=[yes|no] - print hostname in window name
+2. Add $dir/bin to the \$PATH variable
+3. Source $dir/shrc
 
-E.g.: .bashrc:
+# Sample .bashrc:
 export TAB_SPACES=4
 export PROMPT_ENABLED=yes
 export PROMPT_SCREEN=yes
@@ -72,10 +74,8 @@ EOF
 
 if [ $VIMRC -ne 0 ] ; then
 cat << EOF
-
-# VIM CONFIGURATION
-You can include the vimrc directly in your start script
-E.g.: .vimrc
+.vimrc file was not installed. You can include the vimrc in your start script:
+" Sample .vimrc:
 source $dir/vimrc
 EOF
 fi

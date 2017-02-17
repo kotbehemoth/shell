@@ -272,9 +272,9 @@ mkcs()
             -iname '*.[ch]'      -print -o\
             -iname '*.cpp'       -print -o\
             -iname '*.hpp'       -print -o\
+            -iname '*.rl'        -print -o\
             -iname '*.cc'        -print   \
             | sed -e "s|^\([^/]\)|$PWD/\1|" -e 's|\([^.]\)\./|\1|' -e 's|\(.*\)|"\1"|g' >> $filelist
-#            -iname '*.js'        -print -o\
     done
     set +f
     echo "Sorting list file ... "

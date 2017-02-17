@@ -43,9 +43,17 @@ BWhite='\e[1;37m'       # White
 bind '"\e[1;3D":backward-word'
 bind '"\e[1;3C":forward-word'
 
+## System
+sys=`uname -s > /dev/null`
+
 ## Aliases
 
-alias l='ls -Fl --color=auto'
+if [ "$sys" == "Darwin" ]; then
+    alias l='ls -FlG'
+else
+    alias l='ls -Fl --color=auto'
+fi
+
 alias vi='vim'
 alias vil='vim .'
 

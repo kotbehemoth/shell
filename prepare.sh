@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # =================================
 
@@ -45,7 +45,7 @@ check_link $HOME/.screenrc $dir/screenrc
 # vim
 check_link $HOME/.vimrc $dir/vimrc
 VIMRC=$?
-for plugin in `(cd vim; find -type f -name *.vim -printf '%P\n')`; do
+for plugin in `(cd vim; find . -type f -name *.vim -printf '%P\n')`; do
     check_link $HOME/.vim/$plugin $dir/vim/$plugin
 done
 

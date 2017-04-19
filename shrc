@@ -358,6 +358,10 @@ choicelist() # $1 = list $2 = message
         return
     fi
     max=`echo "$1" |& wc -l`
+    if [ $max -eq 1 ]; then
+        echo "$1"
+        return
+    fi
     echo "$1" | cat -n > /dev/stderr
     echo -n "$2 " > /dev/stderr
     read number
@@ -389,12 +393,39 @@ svndifflist()
     fi
 }
 
+svnrevdifflist()
+{
+    list=`svn diff -r$1:HEAD --summarize | grep ^[AMDC] | awk '{print $2;}' | sort`
+    file=`difflist "$list"`
+    if [ -n "$file" ]; then
+        svn diff -r$1 --diff-cmd svn_vimdiff $file
+    fi
+}
+
+svnlist()
+{
+    list=`svn st 2>/dev/null | grep ^[AMDC] | awk '{print $2;}'`
+    file=`choicelist "$list" "Choose file to edit:"`
+    if [ -n "$file" ]; then
+        $EDITOR $file
+    fi
+}
+
+gitlist()
+{
+    list=`git status -s 2>/dev/null | grep ^.M | sed 's/^...//'`
+    file=`choicelist "$list" "Choose file to edit:"`
+    if [ -n "$file" ]; then
+        $EDITOR $file
+    fi
+}
+
 gitdifflist()
 {
     list=`git ls-files -m 2>/dev/null`
     file=`difflist "$list"`
     if [ -n "$file" ]; then
-        git difftool --tool=vimdiff2 --no-prompt $file
+        git difftool -t vimdiff2 --no-prompt $file
     fi
 }
 

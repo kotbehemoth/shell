@@ -44,7 +44,7 @@ bind '"\e[1;3D":backward-word'
 bind '"\e[1;3C":forward-word'
 
 ## System
-sys=`uname -s > /dev/null`
+sys=`uname -s 2> /dev/null`
 
 ## Aliases
 

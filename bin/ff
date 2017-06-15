@@ -41,11 +41,12 @@ OUT=`grep -i $FILE $FILELIST`
 RESULT=`grep -i $FILE $FILELIST | wc -l | awk '{print $1}'`
 if [ $LISTONLY -eq 1 ]; then
     grep -i $FILE $FILELIST | sed 's/\"//g' | sed "$SKIPPATH"
-    exit
+    exit ${PIPESTATUS[0]}
 fi
 
 if [ $RESULT -eq 0 ]; then
     echo "File not found"
+    exit 1
 elif [ $RESULT -eq 1 ]; then
     exec $EDITOR `echo $OUT | sed 's/\"//g'` $LINE
 else
@@ -57,7 +58,7 @@ else
         cleanup
         if ! [ -f "$FILE" ]; then
             echo "Something went wrong :("
-            exit
+            exit 1
         fi
         exec $EDITOR $FILE $LINE
     fi

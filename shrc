@@ -54,7 +54,7 @@ else
     alias l='ls -Fl --color=auto'
 fi
 
-alias vi='vim'
+#alias vi='vim'
 alias vil='vim .'
 
 ## Exports
@@ -110,7 +110,7 @@ getbranch()
 {
     gitbranch=`getgitbranch`
     if [ -n "$gitbranch" ]; then
-        echo "git:${gitbranch}"
+        echo "${gitbranch}"
     fi
 }
 
@@ -429,6 +429,15 @@ gitdifflist()
     fi
 }
 
+gitstagedifflist()
+{
+    list=`git status --porcelain | grep ^M | awk '{print $2}' 2>/dev/null`
+    file=`difflist "$list"`
+    if [ -n "$file" ]; then
+        git difftool --staged -t vimdiff2 --no-prompt $file
+    fi
+}
+
 cdp()
 {
     proj=`getproj`
@@ -446,4 +455,20 @@ cdp()
     fi
 }
 
+unalias vi 2>/dev/null
+vi()
+{
+    if [ $# -eq 0 ]; then
+        vim
+    fi
+    proj=`getproj`
+    name=`echo $1 | sed 's/.*://'`
+    if [ -n "$proj" ] && ! [ -r "$name" ]; then
+        if fl $1 > /dev/null; then
+            ff $1
+            return
+        fi
+    fi
+    vim "$@"
+}
 

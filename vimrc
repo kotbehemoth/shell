@@ -9,6 +9,7 @@ syntax on
 set nocscopeverbose
 set ruler
 set smartindent
+set cursorline
 
 if !empty($TAB_SPACES)
     set expandtab

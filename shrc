@@ -333,7 +333,7 @@ qp()
     fi
 }
 
-go()
+nav()
 {
     tree -d --noreport $1 | cat -n
     echo -n "Select dir to cd to: "

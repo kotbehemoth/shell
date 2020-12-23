@@ -1,5 +1,5 @@
 " This file contains a number of settings and macros collected by my from the
-" internet thorughout few years on my usage of vim. I'm not the author of
+" internet throughout few years on my usage of vim. I'm not the author of
 " majority of them, however it's impossible for me to state the real authors.
 " I hope the authors don't mind.
 
@@ -36,7 +36,7 @@ set hlsearch
 "always show status line (with filename)
 set laststatus=2
 
-" ignore triangling whitespaces when comparing files
+" ignore trailing white spaces when comparing files
 set diffopt+=iwhite
 
 if &diff
@@ -69,6 +69,18 @@ set backspace=2
 
 "sets window title
 set title
+
+"switch between .cpp and .h with Ctrl-L
+noremap  :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
+
+"auto add comment
+:set formatoptions+=r
+
+" Toggle spelling.
+nnoremap <C-o> :setlocal invspell<cr>
+"setlocal spell spelllang=en
+
+au BufNewFile,BufRead Jenkinsfile setf groovy
 
 "man under cursor
 "{{{
